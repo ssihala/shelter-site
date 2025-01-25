@@ -62,10 +62,7 @@ export default function WishlistPage() {
       {/* Header */}
       <Box textAlign="center" mb={4}>
         <Typography variant="h3" fontWeight="bold">
-          Wishlist
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          [Insert Shelter Name]
+            [Insert Shelter Name]
         </Typography>
       </Box>
 
