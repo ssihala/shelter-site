@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     );
   }
 
-  const api_key = "AIzaSyCAYOCiKQp8Fts2p4wf_riVl5uW9g-ns9w";
+  const api_key = process.env.MAPS_API_KEY;
   const maps_query = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,formatted_address,formatted_phone_number,website&key=${api_key}`;
 
   try {
