@@ -16,6 +16,11 @@ import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/ico
 export default function WishlistPage() {
   const shelterName = "[temp]";
 
+  // Get item list from backend
+  const getItemList = () => {
+    
+  };
+
   const [itemList, setItemList] = useState([
     { name: "test1", needUrgency: 3 },
     { name: "test2", needUrgency: 1 },
@@ -51,7 +56,7 @@ export default function WishlistPage() {
     const newItem = { name: "", needUrgency: 1 };
     setItemList([...itemList, newItem]);
   };
-
+  
   // Remove item
   const removeItem = (index:number) => {
     const newItemList = [...itemList];
@@ -60,7 +65,9 @@ export default function WishlistPage() {
   };
 
   // Send item list to backend
-  const saveItemList = () => {};
+  const saveItemList = () => {
+
+  };
 
   return (
     <Box sx={{padding: "20px" , overflowX: "hidden"}}>
