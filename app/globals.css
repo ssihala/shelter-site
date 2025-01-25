@@ -3,19 +3,82 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1a1a1a; 
+  --foreground: #ffffff; 
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #d3d3d3; 
+    --foreground: #000000; 
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    color: #000000; 
+    background: #d3d3d3; 
+    font-family: Arial, Helvetica, sans-serif;
+  } 
+}
+
+/* Tab Bar Banner */
+
+.TabBar {
+  position: absolute;
+  justify-content: space-between;
+  top: 0;
+  right: 30px;
+  display: flex;
+  padding: 10px;
+  gap: 1.5rem;
+  z-index: 2;
+}
+
+.tab-item {
+  font-size: 18px;
+  line-height: 20px;
+  color: rgb(140, 140, 140);
+  font-weight: normal;
+  text-decoration: none; /* Remove underline */
+  display: block;
+}
+
+.tab-item.selected {
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  text-decoration: none; /* Ensure underline is removed for selected items */
+}
+
+.hamburger {
+  font-size: 26px;
+  display: none; /* Hide the hamburger button by default */
+  background: none;
+  border: none;
+  cursor: pointer;
+  height: 33px;
+  width: 30px;
+  border-radius: 5px;
+  position: fixed;
+  top: 10px;
+  right: 30px;
+}
+
+.menu {
+  position: absolute;
+  justify-content: space-between;
+  top: 0;
+  right: 30px;
+  display: flex;
+  padding: 10px;
+  gap: 1.5rem;
+  z-index: 2;
+  top: 10px;
+  border-radius: 4px;
+  background-color: rgb(224,224,224);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); 
+}
+
+.menu.open {
+  display: block;
 }
