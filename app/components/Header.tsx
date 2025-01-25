@@ -15,12 +15,12 @@ const tabBarItems = [
     {
         key: 'wishlist',
         label: 'Wish List',
-        href: '/wishlist'
+        href: '/shelterWishlist'
     },
     { 
-        key: 'contact',
-        label: 'Contact',
-        href: '/contact'
+        key: 'whatWeDo',
+        label: 'What We Do',
+        href: '/whatWeDo'
     },
 ]
 

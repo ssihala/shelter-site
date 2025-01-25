@@ -38,14 +38,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>
-        <div className="flex flex-col h-screen">
           <Header />
-          <main className="flex flex-1">
-            <div className="flex flex-row w-full p-20">
+          <main>
               {children}
-            </div>
           </main>
-        </div>
       </body>
     </html>
   );

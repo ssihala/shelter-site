@@ -11,9 +11,11 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
+  const shelterName = "[temp]";
+
   const [itemList, setItemList] = useState([
     { name: "test1", needUrgency: 3 },
     { name: "test2", needUrgency: 1 },
@@ -57,15 +59,15 @@ export default function WishlistPage() {
     setItemList(newItemList);
   };
 
+  // Send item list to backend
+  const saveItemList = () => {};
+
   return (
-    <Box sx={{ padding: "20px" }}>
+    <Box sx={{padding: "20px" , overflowX: "hidden"}}>
       {/* Header */}
       <Box textAlign="center" mb={4}>
         <Typography variant="h3" fontWeight="bold">
-          Wishlist
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          [Insert Shelter Name]
+          {shelterName}
         </Typography>
       </Box>
 
@@ -147,14 +149,24 @@ export default function WishlistPage() {
             mt: 2,
           }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={addItem}
-          >
-            Add Item
-          </Button>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={addItem}
+              >
+                Add Item
+              </Button>
+              <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              onClick={saveItemList}
+            >
+              Save
+            </Button>
+          </Box>
         </ListItem>
       </List>
     </Box>
