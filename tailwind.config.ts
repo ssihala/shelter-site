@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   content: [
@@ -11,6 +13,11 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        roboto: ["Roboto", "sans-serif"],
+        redhat: ["Red Hat Text", "sans-serif"],
+        // sans: ["var(--font-sans)", ...fontFamily.sans],
       },
     },
   },
