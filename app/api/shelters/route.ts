@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     );
   }
 
-  const api_key = process.env.MAPS_API_KEY;
+  const api_key = process.env.NEXT_PUBLIC_MAPS_API_KEY;
   const location_query = zip ? zip : `${city}, ${state}`;
   const maps_query = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=homeless+shelters+near+${location_query}&key=${api_key}`;
 

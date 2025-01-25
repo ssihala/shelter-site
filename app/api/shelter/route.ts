@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     );
   }
 
-  const api_key = process.env.MAPS_API_KEY;
+  const api_key = process.env.NEXT_PUBLIC_MAPS_API_KEY;
   const maps_query = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,formatted_address,formatted_phone_number,website&key=${api_key}`;
 
   try {
@@ -32,8 +32,9 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     const response = await fetch(maps_query);
 
     const responseBody = await response.json();
-
+    console.log(responseBody);
     const shelter = responseBody.result as ShelterDetails;
+
     // Return the shelter array
     return new Response(JSON.stringify(shelter), {
       status: 200,
