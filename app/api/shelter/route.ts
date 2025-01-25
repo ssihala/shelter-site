@@ -8,7 +8,7 @@ interface ShelterDetails {
   website: string;
 }
 
-export async function GET(req: NextRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
   const place_id = params.get("place_id");
