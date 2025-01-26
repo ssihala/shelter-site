@@ -18,7 +18,7 @@ export default function WishlistPage() {
 
   // Get item list from backend
   const getItemList = () => {
-    
+
   };
 
   const [itemList, setItemList] = useState([
@@ -71,15 +71,30 @@ export default function WishlistPage() {
 
   return (
     <Box sx={{padding: "20px" , overflowX: "hidden"}}>
-      {/* Header */}
-      <Box textAlign="center" mb={4}>
-        <Typography variant="h3" fontWeight="bold">
-          {shelterName}
-        </Typography>
-      </Box>
 
       {/* Item List */}
       <List>
+        <ListItem>{/*List header*/}
+          <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "10px 0",
+            alignItems: "center",
+            width: "100%",
+            borderBottom: "1px solid #000",
+          }}
+          >
+            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Item Name</Typography>
+            {/* Header */}
+            <Box textAlign="center" mb={4}>
+              <Typography variant="h3" fontWeight="bold">
+                {shelterName}
+              </Typography>
+            </Box>
+            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Urgency</Typography>
+          </Box>
+        </ListItem>
         {itemList.map((item, index) => (
           <ListItem
             key={index}
