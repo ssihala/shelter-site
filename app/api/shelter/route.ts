@@ -38,7 +38,9 @@ export async function GET(req: NextRequest) {
     const responseBody = await response.json();
     console.log(responseBody);
     const shelter = responseBody.result as ShelterDetails;
-    const hours = shelter.current_opening_hours.weekday_text;
+    const hours = shelter.current_opening_hours.weekday_text
+      ? shelter.current_opening_hours.weekday_text
+      : [];
 
     // Return the shelter array
     return new Response(
