@@ -10,8 +10,6 @@ interface ShelterResult {
       lng: number;
     };
   };
-  rating: number;
-  user_ratings_total: number;
   place_id: string;
 }
 
@@ -48,8 +46,6 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
       name: result.name,
       address: result.formatted_address,
       location: result.geometry.location,
-      rating: result.rating,
-      num_ratings: result.user_ratings_total,
       place_id: result.place_id,
     }));
 
