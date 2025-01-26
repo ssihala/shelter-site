@@ -19,21 +19,16 @@ export default function WishlistPage() {
 
   // Get item list from backend
   const getItemList = () => {
-    fetch('/api/account/add_item')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Item list:', data);
-        setItemList(data);
-      })
-      .catch(error => {
-        console.error('Error getting item list:', error);
-      });
+    
   };
 
   const startingItemList = [
-    { name: "test1-1", needUrgency: 3 },
+    { name: "test1-1", needUrgency: 2 },
     { name: "test1-2", needUrgency: 2 },
-    { name: "test1-4", needUrgency: 3 },
+    { name: "test2-1", needUrgency: 2 },
+    { name: "test2-2", needUrgency: 2 },
+    { name: "test3-1", needUrgency: 2 },
+    { name: "test3-2", needUrgency: 2 },
   ];
 
   const [itemList, setItemList] = useState([...startingItemList]);
@@ -89,6 +84,7 @@ export default function WishlistPage() {
         )
       );
 
+
       // Filter for modified items
       const modifiedItems = itemList.filter(currentItem =>
         startingItemList.some(startingItem =>
@@ -102,7 +98,7 @@ export default function WishlistPage() {
         !itemList.some(currentItem =>
           startingItem.name === currentItem.name
         )
-      );
+      );;
 
       // Check if there are any items to save
       if (newItems.length + modifiedItems.length + deletedItems.length === 0) {
@@ -112,12 +108,10 @@ export default function WishlistPage() {
       }
 
       
-      const promises = newItems.map(item => 
+      const addPromises = newItems.map(item => 
         fetch('/api/account/add_item', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             param_name: item.name,
             param_importance: item.needUrgency,
@@ -125,40 +119,36 @@ export default function WishlistPage() {
           })
         })
       );
-
-      modifiedItems.forEach(item => {
+    
+      const updatePromises = modifiedItems.map(item => 
         fetch('/api/account/update', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             param_name: item.name,
             param_importance: item.needUrgency,
             param_place_id: placeId
           })
-        });
-      });
-
-
-      deletedItems.forEach(item => {
+        })
+      );
+    
+      const deletePromises = deletedItems.map(item => 
         fetch('/api/account/delete', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             param_name: item.name,
             param_place_id: placeId
           })
-        });
-      });
-
-      const results = await Promise.all(promises);
+        })
+      );
+    
+      const allPromises = [...addPromises, ...updatePromises, ...deletePromises];
+      const results = await Promise.all(allPromises);
       const allSuccessful = results.every(res => res.ok);
-      
+          
       if (allSuccessful) {
-        alert(`Successfully saved ${newItems.length} new items!`);
+        alert(`Successfully saved ${newItems.length} new items!\nSuccessfully updated ${modifiedItems.length} items!\nSuccessfully deleted ${deletedItems.length} items!`);
       } else {
         alert('Some items failed to save');
       }
