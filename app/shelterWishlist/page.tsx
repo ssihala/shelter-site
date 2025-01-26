@@ -31,9 +31,9 @@ export default function WishlistPage() {
   };
 
   const startingItemList = [
-    { name: "test1", needUrgency: 3 },
-    { name: "test2", needUrgency: 1 },
-    { name: "test3", needUrgency: 2 },
+    { name: "test1-1", needUrgency: 3 },
+    { name: "test1-2", needUrgency: 2 },
+    { name: "test1-4", needUrgency: 3 },
   ];
 
   const [itemList, setItemList] = useState([...startingItemList]);
@@ -104,12 +104,14 @@ export default function WishlistPage() {
         )
       );
 
+      // Check if there are any items to save
       if (newItems.length + modifiedItems.length + deletedItems.length === 0) {
         alert('No new items to save');
         setIsLoading(false);
         return;
       }
 
+      
       const promises = newItems.map(item => 
         fetch('/api/account/add_item', {
           method: 'POST',
@@ -123,6 +125,34 @@ export default function WishlistPage() {
           })
         })
       );
+
+      modifiedItems.forEach(item => {
+        fetch('/api/account/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            param_name: item.name,
+            param_importance: item.needUrgency,
+            param_place_id: placeId
+          })
+        });
+      });
+
+
+      deletedItems.forEach(item => {
+        fetch('/api/account/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            param_name: item.name,
+            param_place_id: placeId
+          })
+        });
+      });
 
       const results = await Promise.all(promises);
       const allSuccessful = results.every(res => res.ok);
