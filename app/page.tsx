@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { SearchBar } from './components/SearchBar';
 import Button from './ui/Button';
+import Logo from './components/Logo';
 import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 import PoiMarkers from './components/PoiMarkers'; 
 
@@ -28,6 +29,7 @@ const Home = () => {
     lat: 29.6327107,  // Default: Gainesville, FL
     lng: -82.3429805,
   });
+  const [importanceMap, setImportanceMap] = useState<Record<string, number>>({});
 
   // trigger the search
   const handleSearch = () => {
@@ -77,6 +79,48 @@ const Home = () => {
     }
   };
 
+  // Handle item search from the SearchBar
+  const handleSearchItem = async (itemName: string) => {
+    if (!itemName || pois.length === 0) {
+      console.error("Item name or shelters data is missing");
+      return;
+    }
+
+    const placeIds = pois.map((poi) => poi.place_id);
+
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          param_query_item_name: itemName,  
+          param_place_ids: placeIds,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        console.log("Search results for item:", data);
+
+       const newImportanceMap: Record<string, number> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.forEach((result: any) => {
+        newImportanceMap[result.place_id] = parseInt(result.importance, 10);
+      });
+
+      // Update the importanceMap state
+      setImportanceMap(newImportanceMap);
+      } else {
+        console.error("Error fetching item search results:", data);
+      }
+    } catch (error) {
+      console.error('Error with search POST request:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col w-full space-y-4 items-center">
       <div className="mt-5 bg-gray-200 p-4 text-gray-800 text-lg rounded-md w-[600px]">
@@ -88,7 +132,7 @@ const Home = () => {
         </p>
       </div>
 
-      <div className="flex flex-row w-full space-x-40 justify-center">
+      <div className="flex flex-row w-full space-x-20 justify-center">
         <APIProvider apiKey={api_key || ''}>
           <div className="h-[700px] w-[700px]">
             <Map
@@ -101,12 +145,14 @@ const Home = () => {
               style={{ width: '100%', height: '100%' }}
             >
               {/* Pass pois to PoiMarkers component */}
-              <PoiMarkers pois={pois} />
+
+              <PoiMarkers pois={pois} importanceMap={importanceMap} />
             </Map>
           </div>
         </APIProvider>
 
-        <div className="flex flex-col items-center mt-4 space-y-4 w-72">
+        <div className="flex flex-col items-center mt-1 space-y-4 w-72">
+          <Logo />
           {/* Input Fields */}
           <div className="flex flex-col w-full space-y-3">
             <input
@@ -133,20 +179,24 @@ const Home = () => {
             <Button
               onClick={handleSearch}
             >
-              Search
+              Find
             </Button>
+          </div>
+          
+          <div className="mt-4 text-lg center font-redhat text-gray-600">
+            <p>Search for shelters near you by entering your city and state, or a</p>
+            <p>zip code!</p>
           </div>
 
           {/* SearchBar Component */}
           <SearchBar
-            placeholder="Search"
-            onSearch={handleSearch} 
+            placeholder="Search Item"
+            onSearch={handleSearchItem} 
             className="search-bar"
           />
 
           <div className="mt-4 text-lg center font-redhat text-gray-600">
-            <p>Search for shelters near you by entering your city and state, or a</p>
-            <p>zip code!</p>
+            <p>Enter item to see needs and availability at shelters!</p>
           </div>
         </div>
       </div>
@@ -155,6 +205,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
