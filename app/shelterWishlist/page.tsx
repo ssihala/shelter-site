@@ -15,17 +15,28 @@ import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/ico
 
 export default function WishlistPage() {
   const shelterName = "[temp]";
+  const placeId = "test"; // Replace with actual place ID
 
   // Get item list from backend
   const getItemList = () => {
-
+    fetch('/api/account/add_item')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Item list:', data);
+        setItemList(data);
+      })
+      .catch(error => {
+        console.error('Error getting item list:', error);
+      });
   };
 
-  const [itemList, setItemList] = useState([
+  const startingItemList = [
     { name: "test1", needUrgency: 3 },
     { name: "test2", needUrgency: 1 },
     { name: "test3", needUrgency: 2 },
-  ]);
+  ];
+
+  const [itemList, setItemList] = useState([...startingItemList]);
 
   // Function to get slider color
   const getSliderColor = (value:number) => {
@@ -64,9 +75,43 @@ export default function WishlistPage() {
     setItemList(newItemList);
   };
 
-  // Send item list to backend
-  const saveItemList = () => {
+  // State for loading
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Send item list to backend
+  const saveItemList = async () => {
+    setIsLoading(true);
+    try {
+      const promises = itemList.map(item => 
+        fetch('/api/account/add_item', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            param_name: item.name,
+            param_importance: item.needUrgency,
+            param_place_id: placeId
+          })
+        })
+      );
+
+      const results = await Promise.all(promises);
+      
+      // Check if all requests were successful
+      const allSuccessful = results.every(res => res.ok);
+      
+      if (allSuccessful) {
+        alert('All items saved successfully!');
+      } else {
+        alert('Some items failed to save');
+      }
+    } catch (error) {
+      console.error('Error saving items:', error);
+      alert('Failed to save items');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -188,8 +233,16 @@ export default function WishlistPage() {
               color="primary"
               startIcon={<SaveIcon />}
               onClick={saveItemList}
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? 'Saving...' : 'Save Items'}
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={getItemList}
+            >
+              Test Button
             </Button>
           </Box>
         </ListItem>
