@@ -11,9 +11,16 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
+  const shelterName = "[temp]";
+
+  // Get item list from backend
+  const getItemList = () => {
+
+  };
+
   const [itemList, setItemList] = useState([
     { name: "test1", needUrgency: 3 },
     { name: "test2", needUrgency: 1 },
@@ -49,7 +56,7 @@ export default function WishlistPage() {
     const newItem = { name: "", needUrgency: 1 };
     setItemList([...itemList, newItem]);
   };
-
+  
   // Remove item
   const removeItem = (index:number) => {
     const newItemList = [...itemList];
@@ -57,20 +64,37 @@ export default function WishlistPage() {
     setItemList(newItemList);
   };
 
+  // Send item list to backend
+  const saveItemList = () => {
+
+  };
+
   return (
-    <Box sx={{ padding: "20px" }}>
-      {/* Header */}
-      <Box textAlign="center" mb={4}>
-        <Typography variant="h3" fontWeight="bold">
-          Wishlist
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          [Insert Shelter Name]
-        </Typography>
-      </Box>
+    <Box sx={{padding: "20px" , overflowX: "hidden"}}>
 
       {/* Item List */}
       <List>
+        <ListItem>{/*List header*/}
+          <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "10px 0",
+            alignItems: "center",
+            width: "100%",
+            borderBottom: "1px solid #000",
+          }}
+          >
+            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Item Name</Typography>
+            {/* Header */}
+            <Box textAlign="center" mb={4}>
+              <Typography variant="h3" fontWeight="bold">
+                {shelterName}
+              </Typography>
+            </Box>
+            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Urgency</Typography>
+          </Box>
+        </ListItem>
         {itemList.map((item, index) => (
           <ListItem
             key={index}
@@ -80,6 +104,8 @@ export default function WishlistPage() {
               alignItems: "center",
               padding: "10px 0",
               borderBottom: "1px solid #ddd",
+              boxShadow: "0 4px 6px 0 #ddd",
+              borderRadius: "5px",
             }}
           >
             {/* Item Name */}
@@ -111,6 +137,7 @@ export default function WishlistPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
+                padding: "0 20px",
               }}
             >
               <Typography
@@ -147,14 +174,24 @@ export default function WishlistPage() {
             mt: 2,
           }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={addItem}
-          >
-            Add Item
-          </Button>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={addItem}
+              >
+                Add Item
+              </Button>
+              <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              onClick={saveItemList}
+            >
+              Save
+            </Button>
+          </Box>
         </ListItem>
       </List>
     </Box>
