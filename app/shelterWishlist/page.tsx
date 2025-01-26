@@ -14,7 +14,7 @@ import Button from '../ui/Button'
 import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
-  const shelterName = "Shelter";
+  const shelterName = "Shelter's Wishlist";
   const placeId = "idid"; // Replace with actual place ID
 
   // Helper functions
