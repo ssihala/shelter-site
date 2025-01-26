@@ -82,7 +82,35 @@ export default function WishlistPage() {
   const saveItemList = async () => {
     setIsLoading(true);
     try {
-      const promises = itemList.map(item => 
+      // Filter for new items
+      const newItems = itemList.filter(currentItem => 
+        !startingItemList.some(startingItem => 
+          startingItem.name === currentItem.name
+        )
+      );
+
+      // Filter for modified items
+      const modifiedItems = itemList.filter(currentItem =>
+        startingItemList.some(startingItem =>
+          startingItem.name === currentItem.name 
+          && startingItem.needUrgency !== currentItem.needUrgency
+        )
+      );
+
+      // Filter for deleted items
+      const deletedItems = startingItemList.filter(startingItem =>
+        !itemList.some(currentItem =>
+          startingItem.name === currentItem.name
+        )
+      );
+
+      if (newItems.length + modifiedItems.length + deletedItems.length === 0) {
+        alert('No new items to save');
+        setIsLoading(false);
+        return;
+      }
+
+      const promises = newItems.map(item => 
         fetch('/api/account/add_item', {
           method: 'POST',
           headers: {
@@ -97,12 +125,10 @@ export default function WishlistPage() {
       );
 
       const results = await Promise.all(promises);
-      
-      // Check if all requests were successful
       const allSuccessful = results.every(res => res.ok);
       
       if (allSuccessful) {
-        alert('All items saved successfully!');
+        alert(`Successfully saved ${newItems.length} new items!`);
       } else {
         alert('Some items failed to save');
       }
@@ -111,6 +137,15 @@ export default function WishlistPage() {
       alert('Failed to save items');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Check for empty item names
+  const checkForEmpty = () => {
+    if (itemList.some(item => item.name === "")) {
+      alert('Please fill in all item names');
+    } else {
+      saveItemList();
     }
   };
 
@@ -232,7 +267,7 @@ export default function WishlistPage() {
               variant="contained"
               color="primary"
               startIcon={<SaveIcon />}
-              onClick={saveItemList}
+              onClick={checkForEmpty}
               disabled={isLoading}
             >
               {isLoading ? 'Saving...' : 'Save Items'}
