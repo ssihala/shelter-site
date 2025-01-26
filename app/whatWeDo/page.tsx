@@ -91,7 +91,8 @@ const WhatWeDoPage: React.FC = () => {
                                 borderRadius: 2, 
                                 bgcolor: 'primary.main',
                                 color: 'white',
-                                mt: 2
+                                mt: 2,
+                                mb: 6
                             }}
                         >
                             <Typography 
