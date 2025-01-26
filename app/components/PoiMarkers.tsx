@@ -29,12 +29,21 @@ interface ShelterInfo {
 
 interface PoiMarkersProps {
   pois: Shelter[];
+  importanceMap: Record<string, number>;
 }
 
-const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois }) => {
+const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
   const [selectedShelter, setSelectedShelter] = useState<ShelterInfo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [highlightedPlaceId, setHighlightedPlaceId] = useState<string | null>(null);
+
+  const getMarkerColor = (importance: number) => {
+    if (importance === 1) return 'green';  // Low importance
+    if (importance === 2) return 'yellow'; // Medium importance
+    if (importance === 3) return 'red';    // High importance
+    return 'gray'; 
+  };
+
 
   const handleMarkerClick = async (poi: Shelter) => {
     try {
@@ -80,20 +89,23 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois }) => {
       </div>
 
       {/* Markers for Shelters */}
-      {pois.map((poi) => (
-        <AdvancedMarker
-          key={poi.place_id}
-          position={{ lat: poi.location.lat, lng: poi.location.lng }}
-          onClick={() => handleMarkerClick(poi)}
-        >
-          <Pin
-            background={highlightedPlaceId === poi.place_id ? "#FBBC04" : "#FF6347"} // Highlighted color
-            glyphColor="#000"
-            borderColor="#000"
-            scale={highlightedPlaceId === poi.place_id ? 1.5 : 1.2} // Larger size for selected pin
-          />
-        </AdvancedMarker>
-      ))}
+      {pois.map((poi) => {
+        const importance = importanceMap[poi.place_id] || 'gray'; // Default to importance 1 if not found
+        return (
+          <AdvancedMarker
+            key={poi.place_id}
+            position={{ lat: poi.location.lat, lng: poi.location.lng }}
+            onClick={() => handleMarkerClick(poi)}
+          >
+            <Pin
+              background={highlightedPlaceId === poi.place_id ? "#FBBC04" : getMarkerColor(importance)} // Use getPinColor for background
+              glyphColor="#000"
+              borderColor="#000"
+              scale={highlightedPlaceId === poi.place_id ? 1.5 : 1.2} // Larger size for selected pin
+            />
+          </AdvancedMarker>
+        );
+      })}
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} shelter={selectedShelter} />
     </div>

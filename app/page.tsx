@@ -29,6 +29,7 @@ const Home = () => {
     lat: 29.6327107,  // Default: Gainesville, FL
     lng: -82.3429805,
   });
+  const [importanceMap, setImportanceMap] = useState<Record<string, number>>({});
 
   // trigger the search
   const handleSearch = () => {
@@ -101,8 +102,17 @@ const Home = () => {
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.status === 200) {
         console.log("Search results for item:", data);
+
+       const newImportanceMap: Record<string, number> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.forEach((result: any) => {
+        newImportanceMap[result.place_id] = parseInt(result.importance, 10);
+      });
+
+      // Update the importanceMap state
+      setImportanceMap(newImportanceMap);
       } else {
         console.error("Error fetching item search results:", data);
       }
@@ -135,7 +145,8 @@ const Home = () => {
               style={{ width: '100%', height: '100%' }}
             >
               {/* Pass pois to PoiMarkers component */}
-              <PoiMarkers pois={pois} />
+
+              <PoiMarkers pois={pois} importanceMap={importanceMap} />
             </Map>
           </div>
         </APIProvider>
@@ -168,7 +179,7 @@ const Home = () => {
             <Button
               onClick={handleSearch}
             >
-              Search
+              Find
             </Button>
           </div>
           
@@ -194,6 +205,8 @@ const Home = () => {
 };
 
 export default Home;
+
+
 
 
 
