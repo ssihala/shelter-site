@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import Button from '../ui/Button'
 import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
+const placeId = prompt("Debug: Enter place ID"); // Replace with actual place ID
 
 export default function WishlistPage() {
-  const shelterName = "Shelter";
-  const placeId = "idid"; // Replace with actual place ID
+  const shelterName = "Shelter's Wishlist";
 
   // Helper functions
   const getNeedText = (value: number): string => {
@@ -48,6 +48,10 @@ export default function WishlistPage() {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = await response.json();
+      if (!data) {
+        console.log('No data received');
+        return;
+      }
       if (data.error) {
         console.error('Error:', data.error);
         return;
