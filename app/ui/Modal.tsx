@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Button from './Button';
+import { useRouter } from 'next/navigation';
 
 interface ShelterInfo {
   name: string;
   formatted_address: string;
   formatted_phone_number: string;
   website: string;
+  place_id: string;
   rating: number;
   user_ratings_total: number;
   current_opening_hours: {
@@ -20,10 +22,37 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
-    const [showSignUp, setShowSignUp] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");  
+  const [showSignUp, setShowSignUp] = useState(false);
   
+  
+  const router = useRouter();
+  
+  const handleSubmission = async (email: string, password: string, place_id: string|undefined) => {
+    console.log("Json:", { email, password, place_id });
+    try {
+      const response = await fetch('/api/authenticate/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, param_place_id: place_id }),
+      });
+      const data = await response.json();
+      console.log('Sign up response:', data);
+      console.log('Success value:', data.success);
+      
+      if (response.status === 200) {
+        setShowSignUp(false);
+        // Navigate to wishlist page with parameters
+        console.log("redirecting to wishlist page with parameters: ", place_id, shelter?.name);
+        router.push(`/shelterWishlist/${place_id}/${encodeURIComponent(shelter?.name || '')}`);
+      }
+      } catch (error) {
+        console.error('Error signing up:', error);
+      }
+    }
     if (!isOpen) return null;
-  
+    
     const openingHoursText = shelter?.current_opening_hours?.weekday_text
       ? shelter.current_opening_hours.weekday_text.map((day, index) => (
           <p key={index} className="mb-1">
@@ -41,24 +70,28 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
               <form>
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                    Name
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="name"
-                    type="text"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                     Email
                   </label>
                   <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="email"
                     type="email"
-                    placeholder="Your email"
+                    placeholder="Your Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)} 
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                    Password
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="password"
+                    type="password"
+                    placeholder="Your Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
                 {/* Button Group with Flexbox */}
@@ -66,8 +99,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
                   <Button
                     type="button"
                     className="text-white p-2 rounded"
-                    href="/shelterWishlist"
-                    onClick={() => setShowSignUp(false)}
+                    onClick={() => handleSubmission(email,password,shelter?.place_id)}
                   >
                     Submit
                   </Button>

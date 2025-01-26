@@ -25,6 +25,7 @@ interface ShelterInfo {
   current_opening_hours: {
     weekday_text: string[];
   };
+  place_id: string;
 }
 
 interface PoiMarkersProps {
@@ -56,6 +57,7 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
           formatted_phone_number: data.formatted_phone_number,
           website: data.website,
           rating: data.rating,
+          place_id: poi.place_id,
           user_ratings_total: data.user_ratings_total,
           current_opening_hours: data.current_opening_hours,
         };
