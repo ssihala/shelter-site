@@ -104,6 +104,8 @@ export default function WishlistPage() {
               alignItems: "center",
               padding: "10px 0",
               borderBottom: "1px solid #ddd",
+              boxShadow: "0 4px 6px 0 #ddd",
+              borderRadius: "5px",
             }}
           >
             {/* Item Name */}
@@ -135,6 +137,7 @@ export default function WishlistPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
+                padding: "0 20px",
               }}
             >
               <Typography
