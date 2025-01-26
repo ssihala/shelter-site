@@ -1,6 +1,7 @@
 import supabase from "@/app/db/supabase";
 import { NextRequest } from "next/server";
 
+//Returns a list of items that match the query from "inventory" table
 export async function POST(req: NextRequest) {
   const { param_query_item_name, param_place_ids } = await req.json();
 
