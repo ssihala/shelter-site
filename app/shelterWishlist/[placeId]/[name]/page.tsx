@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -10,12 +11,13 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import Button from '../ui/Button'
+import Button from '../../../ui/Button'
 import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
-const placeId = prompt("Debug: Enter place ID"); // Replace with actual place ID
 
 export default function WishlistPage() {
-  const shelterName = "Shelter's Wishlist";
+  const params = useParams();
+  const placeId = params.placeId as string;
+  const shelterName = decodeURIComponent(params.name as string);
 
   // Helper functions
   const getNeedText = (value: number): string => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from './Button';
+import { useRouter } from 'next/navigation';
 
 interface ShelterInfo {
   name: string;
@@ -21,6 +22,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
   const [password, setPassword] = useState("");
   const [showSignUp, setShowSignUp] = useState(false);
   
+  const router = useRouter();
+  
   const handleSubmission = async (email: string, password: string, place_id: string|undefined) => {
     console.log("Json:", { email, password, place_id });
     try {
@@ -31,7 +34,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
       });
       const data = await response.json();
       console.log('Sign up response:', data);
-      setShowSignUp(false);
+      console.log('Success value:', data.success);
+      
+      if (response.status === 200) {
+        setShowSignUp(false);
+        // Navigate to wishlist page with parameters
+        console.log("redirecting to wishlist page with parameters: ", place_id, shelter?.name);
+        router.push(`/shelterWishlist/${place_id}/${encodeURIComponent(shelter?.name || '')}`);
+      }
     } catch (error) {
       console.error('Error signing up:', error);
     }
