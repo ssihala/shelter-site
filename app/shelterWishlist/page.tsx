@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -15,51 +15,67 @@ import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/ico
 
 export default function WishlistPage() {
   const shelterName = "[temp]";
-  const placeId = "test"; // Replace with actual place ID
+  const placeId = "idid"; // Replace with actual place ID
 
-  // Get item list from backend
-  const getItemList = () => {
-    
-  };
-
-  const startingItemList = [
-    { name: "test1-1", needUrgency: 2 },
-    { name: "test1-2", needUrgency: 2 },
-    { name: "test2-1", needUrgency: 2 },
-    { name: "test2-2", needUrgency: 2 },
-    { name: "test3-1", needUrgency: 2 },
-    { name: "test3-2", needUrgency: 2 },
-  ];
-
-  const [itemList, setItemList] = useState([...startingItemList]);
-
-  // Function to get slider color
-  const getSliderColor = (value:number) => {
-    if (value === 1) return "success.main";
-    if (value === 2) return "warning.main";
-    return "error.main";
-  };
-
-  // Function to get urgency text
-  const getNeedText = (value:number) => {
-    if (value === 1) return "Low";
-    if (value === 2) return "Medium";
-    if (value === 3) return "High";
+  // Helper functions
+  const getNeedText = (value: number): string => {
+    if (value == 1) return "Low";
+    if (value == 2) return "Medium";
+    if (value == 3) return "High";
     return "Error";
   };
+
+  const getSliderColor = (value: number): string => {
+    if (value == 1) return "success.main";
+    if (value == 2) return "warning.main";
+    if (value == 3) return "error.main";
+    alert(value);
+    return "grey.500";
+  };
+
+  interface Item {
+    name: string;
+    importance: number;
+  }
+
+  const [startingItemList, setStartingItemList] = useState<Item[]>([]);
+  const [itemList, setItemList] = useState<Item[]>([]);
+
+  const getItemList = async () => {
+    try {
+      const response = await fetch(`/api/account/list_of_items?place_id=${placeId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      if (data.error) {
+        console.error('Error:', data.error);
+        return;
+      }
+      setStartingItemList(JSON.parse(JSON.stringify(data)));
+      setItemList(JSON.parse(JSON.stringify(data)));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    getItemList();
+  }, []);
+
 
   // Handle slider change
   const handleSliderChange = (value:number|number[], index:number) => {
     if (typeof value === "number") {
       const newItemList = [...itemList];
-      newItemList[index].needUrgency = value;
+      newItemList[index].importance = value;
       setItemList(newItemList);
     }
   };
 
   // Add new item
   const addItem = () => {
-    const newItem = { name: "", needUrgency: 1 };
+    const newItem = { name: "", importance: 1 };
     setItemList([...itemList, newItem]);
   };
   
@@ -89,7 +105,7 @@ export default function WishlistPage() {
       const modifiedItems = itemList.filter(currentItem =>
         startingItemList.some(startingItem =>
           startingItem.name === currentItem.name 
-          && startingItem.needUrgency !== currentItem.needUrgency
+          && startingItem.importance != currentItem.importance
         )
       );
 
@@ -114,7 +130,7 @@ export default function WishlistPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             param_name: item.name,
-            param_importance: item.needUrgency,
+            param_importance: item.importance,
             param_place_id: placeId
           })
         })
@@ -126,7 +142,7 @@ export default function WishlistPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             param_name: item.name,
-            param_importance: item.needUrgency,
+            param_importance: item.importance,
             param_place_id: placeId
           })
         })
@@ -146,9 +162,11 @@ export default function WishlistPage() {
       const allPromises = [...addPromises, ...updatePromises, ...deletePromises];
       const results = await Promise.all(allPromises);
       const allSuccessful = results.every(res => res.ok);
-          
+        
       if (allSuccessful) {
         alert(`Successfully saved ${newItems.length} new items!\nSuccessfully updated ${modifiedItems.length} items!\nSuccessfully deleted ${deletedItems.length} items!`);
+        // Refresh the lists after successful save
+        await getItemList();
       } else {
         alert('Some items failed to save');
       }
@@ -243,23 +261,23 @@ export default function WishlistPage() {
               <Typography
                 variant="body2"
                 sx={{
-                  color: getSliderColor(item.needUrgency),
+                  color: getSliderColor(item.importance),
                   fontWeight: "bold",
                 }}
               >
-                {getNeedText(item.needUrgency)}
+                {getNeedText(item.importance)}
               </Typography>
               <Slider
-                value={item.needUrgency}
+                value={item.importance}
                 min={1}
                 max={3}
                 step={1}
                 marks
                 sx={{
-                  color: getSliderColor(item.needUrgency),
+                  color: getSliderColor(item.importance),
                   width: "120px",
                 }}
-                onChange={(e, value) => handleSliderChange(value, index)}
+                onChange={(_, value) => handleSliderChange(value, index)}
               />
             </Box>
           </ListItem>
@@ -291,13 +309,6 @@ export default function WishlistPage() {
               disabled={isLoading}
             >
               {isLoading ? 'Saving...' : 'Save Items'}
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={getItemList}
-            >
-              Test Button
             </Button>
           </Box>
         </ListItem>
