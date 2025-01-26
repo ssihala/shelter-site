@@ -20,6 +20,7 @@ interface ShelterInfo {
   formatted_address: string;
   formatted_phone_number: string;
   website: string;
+  place_id: string;
 }
 
 interface PoiMarkersProps {
@@ -42,6 +43,7 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois }) => {
           formatted_address: data.formatted_address,
           formatted_phone_number: data.formatted_phone_number,
           website: data.website,
+          place_id: poi.place_id,
         };
         setSelectedShelter(shelterInfo);
         setIsModalOpen(true);
