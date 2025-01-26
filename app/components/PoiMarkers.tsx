@@ -44,7 +44,6 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
     return 'gray'; 
   };
 
-
   const handleMarkerClick = async (poi: Shelter) => {
     try {
       const response = await fetch(`/api/shelter?place_id=${poi.place_id}`);
@@ -113,7 +112,3 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
 };
 
 export default PoiMarkers;
-
-
-
-

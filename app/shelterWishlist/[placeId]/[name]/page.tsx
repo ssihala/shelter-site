@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -10,12 +11,13 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import Button from '../ui/Button'
+import Button from '../../../ui/Button'
 import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
-  const shelterName = "Shelter";
-  const placeId = "idid"; // Replace with actual place ID
+  const params = useParams();
+  const placeId = params.placeId as string;
+  const shelterName = decodeURIComponent(params.name as string);
 
   // Helper functions
   const getNeedText = (value: number): string => {
@@ -48,6 +50,10 @@ export default function WishlistPage() {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = await response.json();
+      if (!data) {
+        console.log('No data received');
+        return;
+      }
       if (data.error) {
         console.error('Error:', data.error);
         return;
