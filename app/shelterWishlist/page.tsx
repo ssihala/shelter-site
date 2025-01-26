@@ -8,9 +8,9 @@ import {
   ListItem,
   Slider,
   TextField,
-  Button,
   IconButton,
 } from "@mui/material";
+import Button from '../ui/Button'
 import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
@@ -298,6 +298,7 @@ export default function WishlistPage() {
               color="primary"
               startIcon={<AddIcon />}
               onClick={addItem}
+              sx={{ fontSize: "0.9rem" }}
               >
                 Add Item
               </Button>
@@ -307,6 +308,7 @@ export default function WishlistPage() {
               startIcon={<SaveIcon />}
               onClick={checkForEmpty}
               disabled={isLoading}
+              sx={{ fontSize: "0.9rem" }}
             >
               {isLoading ? 'Saving...' : 'Save Items'}
             </Button>
