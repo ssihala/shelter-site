@@ -1,4 +1,3 @@
-import { NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 
 interface ShelterDetails {
@@ -6,6 +5,11 @@ interface ShelterDetails {
   formatted_address: string;
   formatted_phone_number: string;
   website: string;
+  rating: number;
+  user_ratings_total: number;
+  current_opening_hours: {
+    weekday_text: string[];
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -25,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 
   const api_key = process.env.NEXT_PUBLIC_MAPS_API_KEY;
-  const maps_query = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,formatted_address,formatted_phone_number,website&key=${api_key}`;
+  const maps_query = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,current_opening_hours&key=${api_key}`;
 
   try {
     // Make a request to the Google Maps Geocoding API
@@ -34,12 +38,16 @@ export async function GET(req: NextRequest) {
     const responseBody = await response.json();
     console.log(responseBody);
     const shelter = responseBody.result as ShelterDetails;
+    const hours = shelter.current_opening_hours.weekday_text;
 
     // Return the shelter array
-    return new Response(JSON.stringify(shelter), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ ...shelter, current_opening_hours: hours }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error("Error querying Google Maps:", error);
     return new Response(
