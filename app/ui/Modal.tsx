@@ -52,6 +52,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
       }
     }
     if (!isOpen) return null;
+
+    const handleInventory = () => {
+      console.log("redirecting to wishlist page with parameters: ", shelter?.place_id, shelter?.name);
+      router.push(`/shelterInventory/${shelter?.place_id}/${encodeURIComponent(shelter?.name || '')}`);
+    }
     
     const openingHoursText = shelter?.current_opening_hours?.weekday_text
       ? shelter.current_opening_hours.weekday_text.map((day, index) => (
@@ -60,6 +65,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
           </p>
         )) 
       : 'No opening hours available';
+
   
     return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
@@ -132,6 +138,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, shelter }) => {
               >
                 Sign Up
               </Button>
+              <div className="flex space-x-4 mt-4">
+                  <Button
+                    type="button"
+                    className="text-white p-2 rounded"
+                    onClick={() => handleInventory()}
+                  >
+                    Show Inventory
+                  </Button>
+                </div>
             </>
           )}
           {/* Wrap buttons in flex container for spacing */}
