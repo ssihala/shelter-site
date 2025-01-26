@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import supabase from "@/app/db/supabase";
 import { NextRequest } from "next/server";
 

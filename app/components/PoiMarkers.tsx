@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import ShelterDropdown from '../ui/DropDown';
-import Modal from '../ui/Modal';
+import React, { useState } from "react";
+import { AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
+import ShelterDropdown from "../ui/DropDown";
+import Modal from "../ui/Modal";
 
 interface Shelter {
   name: string;
@@ -34,15 +34,21 @@ interface PoiMarkersProps {
 }
 
 const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
-  const [selectedShelter, setSelectedShelter] = useState<ShelterInfo | null>(null);
+  const [selectedShelter, setSelectedShelter] = useState<ShelterInfo | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [highlightedPlaceId, setHighlightedPlaceId] = useState<string | null>(null);
+  const [highlightedPlaceId, setHighlightedPlaceId] = useState<string | null>(
+    null
+  );
 
   const getMarkerColor = (importance: number) => {
-    if (importance === 1) return 'green';  // Low importance
-    if (importance === 2) return 'yellow'; // Medium importance
-    if (importance === 3) return 'red';    // High importance
-    return 'gray'; 
+    if (importance === 1) return "green"; // Low importance
+    if (importance === 2) return "yellow"; // Medium importance
+    if (importance === 3) return "red";
+    else {
+      return "gray";
+    }
   };
 
   const handleMarkerClick = async (poi: Shelter) => {
@@ -64,10 +70,10 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
         setSelectedShelter(shelterInfo);
         setIsModalOpen(true);
       } else {
-        console.error('No data returned from backend');
+        console.error("No data returned from backend");
       }
     } catch (error) {
-      console.error('Error fetching shelter details:', error);
+      console.error("Error fetching shelter details:", error);
     }
   };
 
@@ -75,13 +81,12 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
     setHighlightedPlaceId(place_id);
     const selectedPoi = pois.find((poi) => poi.place_id === place_id);
     if (selectedPoi) {
-      handleMarkerClick(selectedPoi); 
+      handleMarkerClick(selectedPoi);
     }
   };
 
   return (
-    <div className="relative w-full h-[700px]"> 
-
+    <div className="relative w-full h-[700px]">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-4 w-72">
         <ShelterDropdown
           placeIds={pois.map((poi) => poi.place_id)}
@@ -91,7 +96,7 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
 
       {/* Markers for Shelters */}
       {pois.map((poi) => {
-        const importance = importanceMap[poi.place_id] || 'gray'; // Default to importance 1 if not found
+        const importance = importanceMap[poi.place_id] || 0; // Default to importance 1 if not found
         return (
           <AdvancedMarker
             key={poi.place_id}
@@ -99,7 +104,11 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
             onClick={() => handleMarkerClick(poi)}
           >
             <Pin
-              background={highlightedPlaceId === poi.place_id ? "#FBBC04" : getMarkerColor(importance)} // Use getPinColor for background
+              background={
+                highlightedPlaceId === poi.place_id
+                  ? "#FBBC04"
+                  : getMarkerColor(importance)
+              } // Use getPinColor for background
               glyphColor="#000"
               borderColor="#000"
               scale={highlightedPlaceId === poi.place_id ? 1.5 : 1.2} // Larger size for selected pin
@@ -108,7 +117,11 @@ const PoiMarkers: React.FC<PoiMarkersProps> = ({ pois, importanceMap }) => {
         );
       })}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} shelter={selectedShelter} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        shelter={selectedShelter}
+      />
     </div>
   );
 };

@@ -1,17 +1,21 @@
-'use client'
-import React, { useState } from 'react';
-import { SearchBar } from './components/SearchBar';
-import Button from './ui/Button';
-import Logo from './components/Logo';
-import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
-import PoiMarkers from './components/PoiMarkers'; 
+"use client";
+import React, { useState } from "react";
+import { SearchBar } from "./components/SearchBar";
+import Button from "./ui/Button";
+import Logo from "./components/Logo";
+import {
+  APIProvider,
+  Map,
+  MapCameraChangedEvent,
+} from "@vis.gl/react-google-maps";
+import PoiMarkers from "./components/PoiMarkers";
 
 interface Shelter {
   name: string;
   formatted_address: string;
   location: {
-      lat: number;
-      lng: number;
+    lat: number;
+    lng: number;
   };
   rating: number;
   user_ratings_total: number;
@@ -21,19 +25,21 @@ interface Shelter {
 const api_key = process.env.NEXT_PUBLIC_MAPS_API_KEY;
 
 const Home = () => {
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [zip, setZip] = useState('');
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
   const [pois, setPois] = useState<Shelter[]>([]); // stores shelters fetched from the API
   const [mapCenter, setMapCenter] = useState({
-    lat: 29.6327107,  // Default: Gainesville, FL
+    lat: 29.6327107, // Default: Gainesville, FL
     lng: -82.3429805,
   });
-  const [importanceMap, setImportanceMap] = useState<Record<string, number>>({});
+  const [importanceMap, setImportanceMap] = useState<Record<string, number>>(
+    {}
+  );
 
   // trigger the search
   const handleSearch = () => {
-    let query = '';
+    let query = "";
     if (zip) {
       query = `zip=${zip}`;
     } else if (city && state) {
@@ -51,8 +57,8 @@ const Home = () => {
       const response = await fetch(`/api/shelters?${query}`);
       const data = await response.json();
 
-      console.log('Fetched data:', data); //debug
-      
+      console.log("Fetched data:", data); //debug
+
       if (Array.isArray(data)) {
         const shelters: Shelter[] = data.map((result: Shelter) => ({
           name: result.name,
@@ -63,19 +69,19 @@ const Home = () => {
           place_id: result.place_id,
         }));
         // Update the map center to the first shelter's location
-      if (shelters.length > 0) {
-        setMapCenter({
-          lat: shelters[0].location.lat,
-          lng: shelters[0].location.lng,
-        });
-      }
-        setPois(shelters);  
+        if (shelters.length > 0) {
+          setMapCenter({
+            lat: shelters[0].location.lat,
+            lng: shelters[0].location.lng,
+          });
+        }
+        setPois(shelters);
       } else {
-        console.error('Fetched data is not an array:', data);
-        setPois([]);  // set an empty array if the data is invalid
+        console.error("Fetched data is not an array:", data);
+        setPois([]); // set an empty array if the data is invalid
       }
     } catch (error) {
-      console.error('Error fetching shelters:', error);
+      console.error("Error fetching shelters:", error);
     }
   };
 
@@ -89,13 +95,13 @@ const Home = () => {
     const placeIds = pois.map((poi) => poi.place_id);
 
     try {
-      const response = await fetch('/api/search', {
-        method: 'POST',
+      const response = await fetch("/api/search", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          param_query_item_name: itemName,  
+          param_query_item_name: itemName,
           param_place_ids: placeIds,
         }),
       });
@@ -105,19 +111,19 @@ const Home = () => {
       if (response.status === 200) {
         console.log("Search results for item:", data);
 
-       const newImportanceMap: Record<string, number> = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.forEach((result: any) => {
-        newImportanceMap[result.place_id] = parseInt(result.importance, 10);
-      });
+        const newImportanceMap: Record<string, number> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.forEach((result: any) => {
+          newImportanceMap[result.place_id] = parseInt(result.importance, 10);
+        });
 
-      // Update the importanceMap state
-      setImportanceMap(newImportanceMap);
+        // Update the importanceMap state
+        setImportanceMap(newImportanceMap);
       } else {
         console.error("Error fetching item search results:", data);
       }
     } catch (error) {
-      console.error('Error with search POST request:', error);
+      console.error("Error with search POST request:", error);
     }
   };
 
@@ -125,24 +131,31 @@ const Home = () => {
     <div className="flex flex-col w-full space-y-4 items-center">
       <div className="mt-5 bg-gray-200 p-4 text-gray-800 text-lg rounded-md w-[600px]">
         <p className="font-semibold">
-          Shelter Seek is intended to assist individuals in need in searching for service providers near them.
+          Shelter Seek is intended to assist individuals in need in searching
+          for service providers near them.
         </p>
         <p className="mt-2">
-          We are not responsible for the service providers listed on this site and do not endorse any of the service providers listed.
+          We are not responsible for the service providers listed on this site
+          and do not endorse any of the service providers listed.
         </p>
       </div>
 
       <div className="flex flex-row w-full space-x-20 justify-center">
-        <APIProvider apiKey={api_key || ''}>
+        <APIProvider apiKey={api_key || ""}>
           <div className="h-[700px] w-[700px]">
             <Map
-              mapId={'68edd6fb1645bd3'}
+              mapId={"68edd6fb1645bd3"}
               defaultZoom={13}
               center={mapCenter}
               onCameraChanged={(ev: MapCameraChangedEvent) =>
-                console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+                console.log(
+                  "camera changed:",
+                  ev.detail.center,
+                  "zoom:",
+                  ev.detail.zoom
+                )
               }
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: "100%", height: "100%" }}
             >
               {/* Pass pois to PoiMarkers component */}
 
@@ -176,22 +189,20 @@ const Home = () => {
               placeholder="Zip Code"
               className="border rounded p-2 w-full"
             />
-            <Button
-              onClick={handleSearch}
-            >
-              Find
-            </Button>
+            <Button onClick={handleSearch}>Find</Button>
           </div>
-          
+
           <div className="mt-4 text-lg center font-redhat text-gray-600">
-            <p>Search for shelters near you by entering your city and state, or a</p>
+            <p>
+              Search for shelters near you by entering your city and state, or a
+            </p>
             <p>zip code!</p>
           </div>
 
           {/* SearchBar Component */}
           <SearchBar
             placeholder="Search Item"
-            onSearch={handleSearchItem} 
+            onSearch={handleSearchItem}
             className="search-bar"
           />
 

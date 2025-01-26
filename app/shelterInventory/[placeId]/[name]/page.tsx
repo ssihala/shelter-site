@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 import {
   Box,
   Typography,
@@ -9,10 +9,7 @@ import {
   ListItem,
   Slider,
   TextField,
-  IconButton,
 } from "@mui/material";
-import Button from '../../../ui/Button'
-import { Delete as DeleteIcon, Add as AddIcon , Save as SaveIcon} from "@mui/icons-material";
 
 export default function WishlistPage() {
   const params = useParams();
@@ -45,23 +42,26 @@ export default function WishlistPage() {
 
   const getItemList = async () => {
     try {
-      const response = await fetch(`/api/account/list_of_items?place_id=${placeId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await fetch(
+        `/api/account/list_of_items?place_id=${placeId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const data = await response.json();
       if (!data) {
-        console.log('No data received');
+        console.log("No data received");
         return;
       }
       if (data.error) {
-        console.error('Error:', data.error);
+        console.error("Error:", data.error);
         return;
       }
       setStartingItemList(JSON.parse(JSON.stringify(data)));
       setItemList(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -69,9 +69,8 @@ export default function WishlistPage() {
     getItemList();
   }, []);
 
-
   // Handle slider change
-  const handleSliderChange = (value:number|number[], index:number) => {
+  const handleSliderChange = (value: number | number[], index: number) => {
     if (typeof value === "number") {
       const newItemList = [...itemList];
       newItemList[index].importance = value;
@@ -84,9 +83,9 @@ export default function WishlistPage() {
     const newItem = { name: "", importance: 1 };
     setItemList([...itemList, newItem]);
   };
-  
+
   // Remove item
-  const removeItem = (index:number) => {
+  const removeItem = (index: number) => {
     const newItemList = [...itemList];
     newItemList.splice(index, 1);
     setItemList(newItemList);
@@ -100,114 +99,125 @@ export default function WishlistPage() {
     setIsLoading(true);
     try {
       // Filter for new items
-      const newItems = itemList.filter(currentItem => 
-        !startingItemList.some(startingItem => 
-          startingItem.name === currentItem.name
-        )
+      const newItems = itemList.filter(
+        (currentItem) =>
+          !startingItemList.some(
+            (startingItem) => startingItem.name === currentItem.name
+          )
       );
 
-
       // Filter for modified items
-      const modifiedItems = itemList.filter(currentItem =>
-        startingItemList.some(startingItem =>
-          startingItem.name === currentItem.name 
-          && startingItem.importance != currentItem.importance
+      const modifiedItems = itemList.filter((currentItem) =>
+        startingItemList.some(
+          (startingItem) =>
+            startingItem.name === currentItem.name &&
+            startingItem.importance != currentItem.importance
         )
       );
 
       // Filter for deleted items
-      const deletedItems = startingItemList.filter(startingItem =>
-        !itemList.some(currentItem =>
-          startingItem.name === currentItem.name
-        )
-      );;
+      const deletedItems = startingItemList.filter(
+        (startingItem) =>
+          !itemList.some(
+            (currentItem) => startingItem.name === currentItem.name
+          )
+      );
 
       // Check if there are any items to save
       if (newItems.length + modifiedItems.length + deletedItems.length === 0) {
-        alert('No new items to save');
+        alert("No new items to save");
         setIsLoading(false);
         return;
       }
 
-      
-      const addPromises = newItems.map(item => 
-        fetch('/api/account/add_item', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      const addPromises = newItems.map((item) =>
+        fetch("/api/account/add_item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             param_name: item.name,
             param_importance: item.importance,
-            param_place_id: placeId
-          })
+            param_place_id: placeId,
+          }),
         })
       );
-    
-      const updatePromises = modifiedItems.map(item => 
-        fetch('/api/account/update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+
+      const updatePromises = modifiedItems.map((item) =>
+        fetch("/api/account/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             param_name: item.name,
             param_importance: item.importance,
-            param_place_id: placeId
-          })
+            param_place_id: placeId,
+          }),
         })
       );
-    
-      const deletePromises = deletedItems.map(item => 
-        fetch('/api/account/delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+
+      const deletePromises = deletedItems.map((item) =>
+        fetch("/api/account/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             param_name: item.name,
-            param_place_id: placeId
-          })
+            param_place_id: placeId,
+          }),
         })
       );
-    
-      const allPromises = [...addPromises, ...updatePromises, ...deletePromises];
+
+      const allPromises = [
+        ...addPromises,
+        ...updatePromises,
+        ...deletePromises,
+      ];
       const results = await Promise.all(allPromises);
-      const allSuccessful = results.every(res => res.ok);
-        
+      const allSuccessful = results.every((res) => res.ok);
+
       if (allSuccessful) {
-        alert(`Successfully saved ${newItems.length} new items!\nSuccessfully updated ${modifiedItems.length} items!\nSuccessfully deleted ${deletedItems.length} items!`);
+        alert(
+          `Successfully saved ${newItems.length} new items!\nSuccessfully updated ${modifiedItems.length} items!\nSuccessfully deleted ${deletedItems.length} items!`
+        );
         // Refresh the lists after successful save
         await getItemList();
       } else {
-        alert('Some items failed to save');
+        alert("Some items failed to save");
       }
     } catch (error) {
-      console.error('Error saving items:', error);
-      alert('Failed to save items');
+      console.error("Error saving items:", error);
+      alert("Failed to save items");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Box sx={{padding: "20px" , overflowX: "hidden"}}>
-
+    <Box sx={{ padding: "20px", overflowX: "hidden" }}>
       {/* Item List */}
       <List>
-        <ListItem>{/*List header*/}
+        <ListItem>
+          {/*List header*/}
           <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "10px 0",
-            alignItems: "center",
-            width: "100%",
-            borderBottom: "1px solid #000",
-          }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "10px 0",
+              alignItems: "center",
+              width: "100%",
+              borderBottom: "1px solid #000",
+            }}
           >
-            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Item Name</Typography>
+            <Typography variant="h6" sx={{ alignSelf: "flex-end" }}>
+              Item Name
+            </Typography>
             {/* Header */}
             <Box textAlign="center" mb={4}>
               <Typography variant="h3" fontWeight="bold">
                 {shelterName}
               </Typography>
             </Box>
-            <Typography variant="h6" sx={{alignSelf: "flex-end"}}>Urgency</Typography>
+            <Typography variant="h6" sx={{ alignSelf: "flex-end" }}>
+              Urgency
+            </Typography>
           </Box>
         </ListItem>
         {itemList.map((item, index) => (
@@ -230,7 +240,7 @@ export default function WishlistPage() {
                 size="small"
                 value={item.name}
                 placeholder="Item name"
-                sx={{ width: "200px" , mr: "40px", ml:"auto"}}
+                sx={{ width: "200px", mr: "40px", ml: "auto" }}
               />
             </Box>
 

@@ -13,7 +13,7 @@ interface ShelterResult {
   place_id: string;
 }
 
-export async function GET(req: NextRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
 
   const city = params.get("city");
@@ -56,6 +56,8 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     });
   } catch (error) {
     console.error("Error querying Google Maps:", error);
-    res.status(500).json({ error: "Failed to query Google Maps" });
+    return new Response(
+      JSON.stringify({ error: "Failed to query Google Maps" })
+    );
   }
 }
